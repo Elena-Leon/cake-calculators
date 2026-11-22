@@ -9,7 +9,7 @@
 @media(max-width:720px){.price-table{min-width:0}.price-table thead{display:none}.price-table,.price-table tbody,.price-table tr,.price-table td{display:block;width:100%}.price-table tr{padding:10px;border-bottom:3px solid var(--line)}.price-table td{border:0;padding:4px 0}.price-table td::before{content:attr(data-label);display:block;font-size:12px;color:var(--muted)}.price-table td:first-child input{font-weight:700;font-size:17px}.price-table td:last-child::before{display:none}}
 .pick-list label{display:flex;gap:8px;align-items:center;padding:6px 0}
 .lightbox{position:fixed;inset:0;background:#000d;z-index:200;display:flex;align-items:center;justify-content:center}.lbscroll{max-width:100%;max-height:100%;overflow:auto;display:flex}.lbscroll img{max-width:96vw;max-height:90vh;margin:auto;cursor:zoom-in;border-radius:8px}.lbscroll img.big{max-width:none;max-height:none;width:220vmax;cursor:zoom-out}.lbclose{position:fixed;top:12px;right:12px}.lbhint{position:fixed;bottom:12px;color:#fff;font-size:13px;pointer-events:none}.cake img,.thumbs img{cursor:zoom-in}.cakedesc{white-space:pre-line;color:var(--muted);font-size:14px}.dategroup{margin:26px 0 0;padding-bottom:6px;border-bottom:2px solid var(--accent)}</style></head><body>
-<header><div class="top"><div><p class="eyebrow">Мастерская кондитера / v0.26.0</p><h1>Торт начинается<br>с точного расчёта.</h1></div><button id="theme" class="alt" onclick="toggleTheme()">Ночная тема</button></div>
+<header><div class="top"><div><p class="eyebrow">Мастерская кондитера / v0.27.0</p><h1>Торт начинается<br>с точного расчёта.</h1></div><button id="theme" class="alt" onclick="toggleTheme()">Ночная тема</button></div>
 <div class="rolebar"><span class="badge">Демонстрация двух сторон</span><button id="bakerRole" onclick="setRole('baker')">Кабинет кондитера</button><button class="alt" id="clientRole" onclick="setRole('client')">Глазами заказчика</button><span id="saveState" role="status">Загружаю сохранённые данные…</span></div><nav aria-label="Разделы"><button data-view="hub" aria-selected="true" onclick="showView('hub')">Хаб</button><button data-view="tools" aria-selected="false" onclick="showView('tools')">Калькуляторы</button><button data-view="price" aria-selected="false" onclick="showView('price')">Прайс</button><button data-view="recipes" aria-selected="false" onclick="showView('recipes')">Техкарты</button><button data-view="client" aria-selected="false" onclick="showView('client')">Заказчику</button><button data-view="catalogue" aria-selected="false" onclick="showView('catalogue')">Витрина</button><button data-view="orders" aria-selected="false" onclick="showView('orders')">Заявки</button><button data-view="access" aria-selected="false" onclick="showView('access')">Подписка</button></nav>
 <div class="notice">Прототип для тестирования. Карты, файлы, прайс и каталог хранятся в этом браузере. Нет входа, серверного хранилища, реальных оплат и уведомлений. Используйте учебные данные.</div></header>
 <main>
@@ -692,7 +692,7 @@ const _ot24=orderText;orderText=function(o){let t=_ot24(o);const l=[];if(o.spong
 const _ro24=renderOrders;renderOrders=function(){_ro24();document.querySelectorAll('#orderList article.order').forEach(el=>{const m=el.querySelector('.badge')?.textContent.match(/№(\d+)/),o=m&&getOrder(Number(m[1]));if(!o||el.querySelector('.spNote')||!(o.sponge||o.lowSweet))return;el.querySelector('h3').insertAdjacentHTML('afterend',`<p class="spNote">${o.sponge?'<b>Бисквит:</b> '+escapeHTML(o.sponge):''}${o.sponge&&o.lowSweet?' · ':''}${o.lowSweet?'<b>Пониженная сладость</b>':''}</p>`)})};
 const _rs24=renderShop;renderShop=function(){_rs24();const h=$('shopBody');if(!h||$('spongeCard'))return;spongeList();h.insertAdjacentHTML('beforeend',`<article class="card" id="spongeCard"><h3>Вкус бисквита и сладость</h3><label for="spongeTa">Вкусы бисквита для заказчика (по одному в строке; пусто — вопрос не задаётся)</label><textarea id="spongeTa" oninput="shop.sponges=this.value.split('\\n').map(x=>x.trim()).filter(Boolean);persist()">${escapeHTML(shop.sponges.join('\n'))}</textarea><label><input type="checkbox" ${shop.lowSweet?'checked':''} onchange="shop.lowSweet=this.checked;persist()"> Предлагать заказчику «Пониженная сладость»</label></article>`)};
 
-/* v0.26.0: ярус 1 — верхний; фальшярусы под тортом, цена входит в стоимость */
+/* v0.27.0: ярус 1 — верхний; фальшярусы под тортом, цена входит в стоимость */
 function fauxPrice(){return Math.max(0,Number(shop&&shop.fauxPrice)||0)}
 const FAUX='Фальшярус';
 tierShares=function(n){const t=n*(n+1)/2;return Array.from({length:n},(_,i)=>(i+1)/t)};
@@ -704,6 +704,42 @@ tierRender=function(){const box=$('tierList');if(!box||!tierBase)return;const op
 tierSetFill=function(i,v){const t=Array.from({length:tierN},(_,k)=>k===i?v:(tierFills[k]||tierBase.name));if(t.every(x=>x===FAUX))v=tierBase.name;tierFills[i]=v;tierChanged()};
 tierLine=function(o){return o.tiers&&o.tiers.length?o.tiers.map((t,i)=>t.faux?`${i+1}) ${FAUX} — ${money(t.price)}`:`${i+1}) ${t.name} — ${num(t.weight)} кг`).join('; '):''};
 const _rs26=renderShop;renderShop=function(){_rs26();const host=$('shopBody');if(!host||$('fauxCard'))return;host.insertAdjacentHTML('beforeend',`<article class="card" id="fauxCard"><h3>Фальшярусы</h3><p class="muted">Ярус 1 — верхний. Если заказчику нужен торт выше, снизу добавляются фальшярусы: их цена входит в стоимость торта. Вы можете поменять любой ярус с торта на фальшярус и обратно, а итоговую цену поправить при согласовании заказа.</p><label for="fauxP">Цена одного фальшяруса, ₽ за штуку</label><input id="fauxP" type="text" inputmode="decimal" value="${fauxPrice()||''}" oninput="shop.fauxPrice=Math.max(0,numP(this.value));persist()"><small>Пусто или 0 — фальшярусы заказчику не предлагаются.</small></article>`)};
+
+/* v0.27.0: единый список продуктов — дубли объединены, мусор убран, цены связаны с калькулятором 01 */
+const EGGW=new Set(['яйцо','яйца','яиц','яйцом','яичный','яичные','яичная','белок','белки','белков','белка','желток','желтки','желтков','желтка']);
+const DROPW=/^(тертая|тертый|тертое|тертые|тёртая|тёртый|тёртое|тёртые|кусочками|кусочки|кубиками|кубиком|кубики|мелко|нарезанный|нарезанная|нарезанные)$/i;
+const stemW=w=>{if(w.length>4)w=w.replace(/ок$/,'к').replace(/ек$/,'к');if(w.length>3)w=w.replace(/(ого|его|ому|ему|ыми|ими|ой|ая|яя|ое|ее|ый|ий|ые|ие|ых|их|ом|ем|ов|ей|ам|ям|ах|ях|а|я|ы|и|у|ю|е|о|ь)$/,'');return w};
+const capF=t=>t?t.charAt(0).toUpperCase()+t.slice(1):t;
+function canonRaw(raw){let t=String(raw||'').replace(/_/g,' ').replace(/\([^)]*\)/g,' ').trim();if(!t)return null;t=t.replace(/\s*\+.*$/,'');if(/равными|долями|примерно/i.test(t))return null;t=t.split(',')[0].trim();if(/^\d/.test(t))return null;
+ let ws=t.split(/\s+/).map(w=>w.replace(/[.;:]+$/,'')).filter(w=>w&&!DROPW.test(w));if(!ws.length)return null;
+ const low=ws.map(w=>w.toLowerCase().replace(/ё/g,'е'));
+ if(low.length===1&&/^вод[аыуе]$/.test(low[0]))return null;
+ if(low.every(w=>EGGW.has(w)))return{ck:'яйца',name:'Яйца',fixed:true};
+ const ck=low.map(stemW).sort().join(' ');
+ if(ck==='мук пшеничн')return{ck:'мук',name:'Мука',fixed:true};
+ if(ck==='мук')return{ck:'мук',name:'Мука',fixed:true};
+ return{ck,name:capF(ws.join(' ').toLowerCase())}}
+const scoreN=n=>/(ого|его|ов|ок|ей|ля)(?=\s|$)/i.test(n)?100:0;
+const regC=new Map();
+function regAdd(raw){const c=canonRaw(raw);if(!c)return;const sc=c.fixed?-1:scoreN(c.name),cur=regC.get(c.ck);if(!cur||sc<cur.sc||(sc===cur.sc&&c.name.length<cur.name.length))regC.set(c.ck,{name:c.name,sc})}
+function dispOf(raw){const c=canonRaw(raw);if(!c)return null;return(regC.get(c.ck)||{name:c.name}).name}
+function lookupExtra(ex,ck,name){ex=ex||{};if(ex[normP(name)]!=null)return numP(ex[normP(name)]);for(const k of Object.keys(ex)){const c=canonRaw(k);if(c&&c.ck===ck&&numP(ex[k])>0)return numP(ex[k])}return 0}
+const _ci27=cardItems;
+cardItems=async function(c){const it=await _ci27(c),m=new Map();it.forEach(i=>{const cr=canonRaw(i.name);if(!cr)return;regAdd(i.name);const g=Number(i.grams)||0,e=m.get(cr.ck);if(e){e.grams+=g;e.noWeight=e.noWeight&&!!i.noWeight}else m.set(cr.ck,{...i,grams:g})});
+ return [...m.entries()].map(([ck,i])=>{const name=(regC.get(ck)||{name:i.name}).name;let g=i.grams;if(!(g>0))g=lookupExtra(c.extra,ck,name);return{...i,name,grams:g,noWeight:!!i.noWeight}})};
+async function canonScan(){for(const r of priceRows){const c=cardOfRow(r);if(!c)continue;try{(await _ci27(c)).forEach(i=>regAdd(i.name))}catch(e){}}
+ for(const k of Object.keys(productPrices)){const c=canonRaw(k);if(!c||!regC.has(c.ck))continue;const nk=normP(regC.get(c.ck).name);if(nk!==k){if(!(numP(productPrices[nk])>0)&&numP(productPrices[k])>0)productPrices[nk]=productPrices[k];delete productPrices[k]}}}
+const _rc27=renderCosts;renderCosts=async function(){await canonScan();return _rc27()};
+/* связь с калькулятором 01 */
+function prodNames(){const s=new Set();regC.forEach(v=>s.add(v.name));Object.keys(productPrices).forEach(k=>{const d=dispOf(k);if(d)s.add(d)});return[...s].sort((a,b)=>a.localeCompare(b,'ru'))}
+function ppPerKg(name){const d=dispOf(name);return numP(productPrices[normP(d||name)])}
+function fillProdList(){let dl=$('prodList');if(!dl){dl=document.createElement('datalist');dl.id='prodList';document.body.append(dl)}dl.innerHTML=prodNames().map(n=>`<option value="${escapeHTML(n)}">`).join('')}
+const _ai27=addIngredient;addIngredient=function(n='',price='',pack='',used=''){_ai27(n,price,pack,used);const row=$('ingredients').lastElementChild,inp=row.querySelector('.iname');inp.setAttribute('list','prodList');inp.addEventListener('focus',fillProdList);inp.addEventListener('change',()=>{const p=ppPerKg(inp.value);if(p>0&&!row.querySelector('.iprice').value&&!row.querySelector('.ipack').value){row.querySelector('.iprice').value=p;row.querySelector('.ipack').value=1000}})};
+async function ingFromCard(){const id=Number($('ingCard').value),c=recipeCards.find(x=>x.id===id);if(!c)return;await canonScan();const it=(await cardItems(c)).filter(i=>Number(i.grams)>0);$('ingredients').innerHTML='';it.forEach(i=>{const p=ppPerKg(i.name);addIngredient(i.name,p>0?p:'',1000,i.grams)});$('ingMsg').textContent='Взято продуктов: '+it.length+'. '+(it.some(i=>!(ppPerKg(i.name)>0))?'Где цена пустая — впишите её (упаковка 1000 г = цена за кг).':'Цены подставлены из «Цен продуктов».')}
+function ingToBase(){let n=0;for(const r of $('ingredients').children){const nm=r.querySelector('.iname').value.trim(),p=Number(r.querySelector('.iprice').value),pk=Number(r.querySelector('.ipack').value);if(!nm||!(p>0)||!(pk>0))continue;regAdd(nm);const d=dispOf(nm);if(!d)continue;productPrices[normP(d)]=String(Math.round(p/pk*1000*100)/100);n++}persist();$('ingMsg').textContent=n?'Сохранил в «Цены продуктов»: '+n+' (за кг). Они сразу считаются в себестоимости техкарт.':'Нечего сохранять: нужны название, цена и вес упаковки.';try{renderCosts()}catch(e){}}
+function fillCardSel(){const sel=$('ingCard');if(!sel)return;const cur=sel.value;sel.innerHTML='<option value="">— выберите —</option>'+recipeCards.map(c=>`<option value="${c.id}">${escapeHTML(c.name)}</option>`).join('');sel.value=cur}
+(function(){const a=$('ingredients');if(!a||$('ingCard'))return;const box=a.nextElementSibling;if(!box)return;box.insertAdjacentHTML('beforeend','<button class="alt" onclick="ingToBase()">Сохранить цены в «Цены продуктов»</button>');box.insertAdjacentHTML('afterend','<div class="grid" style="margin-top:8px"><div><label for="ingCard">Взять продукты из техкарты</label><select id="ingCard"></select></div><div style="align-self:end"><button class="alt" onclick="ingFromCard()">Подставить</button></div></div><small id="ingMsg" class="muted"></small>');fillCardSel()})();
+const _sv27=showView;showView=function(id){_sv27(id);fillCardSel()};
 if(typeof ready!=='undefined'&&ready){renderOrders()}
 if(typeof ready!=='undefined'&&ready){try{renderCatalogue()}catch(e){}}
 if(typeof ready!=='undefined'&&ready){try{syncPriceDesserts()}catch(e){}renderDessertBox&&renderDessertBox()}
